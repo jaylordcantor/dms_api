@@ -10,7 +10,7 @@ namespace dms_api.Services.DepartmentService
         Task<ServiceResponse<List<GetDepartmentDto>>> GetAllDepartment();
         Task<ServiceResponse<GetDepartmentDto>> GetDepartmentById(int id);
         Task<ServiceResponse<List<AddDepartmentDto>>> AddDepartment(AddDepartmentDto newDepartment);
-        Task<ServiceResponse<UpdateDepartmentDto>> UpdateDepartment(UpdateDepartmentDto updatedDepartment);
+        Task<ServiceResponse<GetDepartmentDto>> UpdateDepartment(UpdateDepartmentDto updatedDepartment);
         Task<ServiceResponse<List<GetDepartmentDto>>> DeleteDepartment(int id);
     }
 }
