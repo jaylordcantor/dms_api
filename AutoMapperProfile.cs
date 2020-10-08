@@ -1,6 +1,7 @@
 using AutoMapper;
 using dms_api.Dtos.Department;
 using dms_api.Dtos.Division;
+using dms_api.Dtos.Section;
 using dms_api.Models;
 
 namespace dms_api
@@ -16,6 +17,10 @@ namespace dms_api
             //Department
             CreateMap<Department, GetDepartmentDto>();
             CreateMap<AddDepartmentDto, Department>();
+
+            //Section
+            CreateMap<Section, GetSectionDto>();
+            CreateMap<AddSectionDto, Section>();
         }
     }
 }
