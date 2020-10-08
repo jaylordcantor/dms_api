@@ -34,13 +34,13 @@ namespace dms_api.Controllers
         }
 
         [HttpGet("api/get/All")]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> GetAll()
         {
             return Ok(await _divisionService.GetAllDivision());
         }
 
         [HttpGet("api/get/{id}")]
-        public async Task<IActionResult> GetSingle(int id)
+        public async Task<IActionResult> GetById(int id)
         {
             return Ok(await _divisionService.GetDivisionById(id));
         }
