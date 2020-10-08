@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace dms_api.Controllers
 {
     [ApiController]
-    [Route("controller")]
+    [Route("[controller]")]
     public class DepartmentController : ControllerBase
     {
         private readonly IDepartmentService _departmentService;

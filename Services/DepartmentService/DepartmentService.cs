@@ -20,16 +20,16 @@ namespace dms_api.Services.DepartmentService
             _mapper = mapper;
 
         }
-        public async Task<ServiceResponse<List<AddDepartmentDto>>> AddDepartment(AddDepartmentDto newDepartment)
+        public async Task<ServiceResponse<List<GetDepartmentDto>>> AddDepartment(AddDepartmentDto newDepartment)
         {
-            ServiceResponse<List<AddDepartmentDto>> serviceResponse = new ServiceResponse<List<AddDepartmentDto>>();
+            ServiceResponse<List<GetDepartmentDto>> serviceResponse = new ServiceResponse<List<GetDepartmentDto>>();
 
             Department department = _mapper.Map<Department>(newDepartment);
 
             await _context.Departments.AddAsync(department);
             await _context.SaveChangesAsync();
 
-            serviceResponse.Data = (_context.Departments.Select(x => _mapper.Map<AddDepartmentDto>(x))).ToList();
+            serviceResponse.Data = (_context.Departments.Select(x => _mapper.Map<GetDepartmentDto>(x))).ToList();
 
             return serviceResponse;
         }

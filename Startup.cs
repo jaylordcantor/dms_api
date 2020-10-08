@@ -1,6 +1,7 @@
 using System.IO;
 using AutoMapper;
 using dms_api.Data;
+using dms_api.Services.DepartmentService;
 using dms_api.Services.DivisionService;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -27,6 +28,7 @@ namespace dms_api
             services.AddDbContext<DataContext>(x => x.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddControllers();
             services.AddScoped<IDivisionService, DivisionService>();
+            services.AddScoped<IDepartmentService, DepartmentService>();
             services.AddAutoMapper(typeof(Startup));
         }
 
