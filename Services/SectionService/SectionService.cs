@@ -82,11 +82,18 @@ namespace dms_api.Services.SectionService
             try
             {
                 Section section = await _context.Sections.FirstOrDefaultAsync(x => x.Id == updatedSection.Id);
+
+
+                section.Id = updatedSection.Id;
+                section.DepartmentId = updatedSection.DepartmentId;
+                section.Code = updatedSection.Code;
+                section.Name = updatedSection.Name;
+
                 _context.Sections.Update(section);
 
                 await _context.SaveChangesAsync();
 
-                serviceResponse.Data = _mapper.Map<GetSectionDto>(updatedSection);
+                serviceResponse.Data = _mapper.Map<GetSectionDto>(section);
             }
             catch(Exception ex)
             {

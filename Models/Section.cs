@@ -4,6 +4,7 @@ namespace dms_api.Models
     {
         public int Id { get; set; }
         public int DepartmentId { get; set; }
+        public Department Department { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
     }
