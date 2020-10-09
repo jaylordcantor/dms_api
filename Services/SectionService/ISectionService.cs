@@ -9,6 +9,7 @@ namespace dms_api.Services.SectionService
     {
         Task<ServiceResponse<List<GetSectionDto>>> GetAllSection();
         Task<ServiceResponse<GetSectionDto>> GetSectionById(int id);
+        Task<ServiceResponse<List<GetSectionDto>>> GetSectionByDepartmentId(int id);
         Task<ServiceResponse<List<GetSectionDto>>> AddSection(AddSectionDto newSection);
         Task<ServiceResponse<GetSectionDto>> UpdateSection(UpdateSectionDto updatedSection);
         Task<ServiceResponse<List<GetSectionDto>>> DeleteSection(int id);

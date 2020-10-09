@@ -38,6 +38,12 @@ namespace dms_api.Controllers
             return Ok(await _sectionService.GetAllSection());
         }
 
+        [HttpGet("api/get/department/{id}")]
+        public async Task<IActionResult> GetByDepartmentId(int id)
+        {
+            return Ok(await _sectionService.GetSectionByDepartmentId(id));
+        }
+
         [HttpGet("api/get/{id}")]
         public async Task<IActionResult> GetById(int id)
         {

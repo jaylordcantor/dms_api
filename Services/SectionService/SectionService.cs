@@ -65,6 +65,17 @@ namespace dms_api.Services.SectionService
             return serviceResponse;
         }
 
+        public async Task<ServiceResponse<List<GetSectionDto>>> GetSectionByDepartmentId(int id)
+        {
+            ServiceResponse<List<GetSectionDto>> serviceResponse = new ServiceResponse<List<GetSectionDto>>();
+
+            List<Section> section = await _context.Sections.Include(s => s.Department).Where(s => s.DepartmentId == id).ToListAsync();
+
+            serviceResponse.Data = section.Select(x => _mapper.Map<GetSectionDto>(x)).ToList();
+            
+            return serviceResponse;
+        }
+
         public async Task<ServiceResponse<GetSectionDto>> GetSectionById(int id)
         {
             ServiceResponse<GetSectionDto> serviceResponse = new ServiceResponse<GetSectionDto>();
