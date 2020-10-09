@@ -3,6 +3,7 @@ using AutoMapper;
 using dms_api.Data;
 using dms_api.Services.DepartmentService;
 using dms_api.Services.DivisionService;
+using dms_api.Services.LocationService;
 using dms_api.Services.SectionService;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -30,6 +31,7 @@ namespace dms_api
             services.AddControllers();
             services.AddScoped<IDivisionService, DivisionService>();
             services.AddScoped<IDepartmentService, DepartmentService>();
+            services.AddScoped<ILocationService, LocationService>();
             services.AddScoped<ISectionService, SectionService>();
             services.AddAutoMapper(typeof(Startup));
         }
