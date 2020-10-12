@@ -29,10 +29,10 @@ namespace dms_api
         {
             services.AddDbContext<DataContext>(x => x.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddControllers();
-            services.AddScoped<IDivisionService, DivisionService>();
-            services.AddScoped<IDepartmentService, DepartmentService>();
-            services.AddScoped<ILocationService, LocationService>();
-            services.AddScoped<ISectionService, SectionService>();
+            services.AddScoped<IDivisionService, DivisionService>(); //division service
+            services.AddScoped<IDepartmentService, DepartmentService>(); //department service
+            services.AddScoped<ILocationService, LocationService>(); //location service
+            services.AddScoped<ISectionService, SectionService>(); //section service
             services.AddAutoMapper(typeof(Startup));
         }
 
