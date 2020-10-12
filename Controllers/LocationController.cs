@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using dms_api.Dtos.Location;
 using dms_api.Models;
 using dms_api.Services.LocationService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace dms_api.Controllers

@@ -1,10 +1,12 @@
 using System.IO;
+using System.Text;
 using AutoMapper;
 using dms_api.Data;
 using dms_api.Services.DepartmentService;
 using dms_api.Services.DivisionService;
 using dms_api.Services.LocationService;
 using dms_api.Services.SectionService;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 
 namespace dms_api
 {
@@ -29,11 +32,23 @@ namespace dms_api
         {
             services.AddDbContext<DataContext>(x => x.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddControllers();
-            services.AddScoped<IAuthRepository, AuthRepository>();
+            services.AddScoped<IAuthRepository, AuthRepository>(); //authentication repository
             services.AddScoped<IDivisionService, DivisionService>(); //division service
             services.AddScoped<IDepartmentService, DepartmentService>(); //department service
             services.AddScoped<ILocationService, LocationService>(); //location service
             services.AddScoped<ISectionService, SectionService>(); //section service
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>{
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII
+                        .GetBytes(Configuration.GetSection("AppSettings:Token").Value)),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                };
+            });
+
             services.AddAutoMapper(typeof(Startup));
         }
 
@@ -57,6 +72,8 @@ namespace dms_api
             });
 
             app.UseRouting();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 
