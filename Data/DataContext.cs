@@ -11,5 +11,6 @@ namespace dms_api.Data
         public DbSet<Division> Divisions{get; set;}
         public DbSet<Location> Locations { get; set; }
         public DbSet<Section> Sections{get; set;}
+        public DbSet<User> Users { get; set; }
     }
 }

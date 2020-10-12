@@ -29,6 +29,7 @@ namespace dms_api
         {
             services.AddDbContext<DataContext>(x => x.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddControllers();
+            services.AddScoped<IAuthRepository, AuthRepository>();
             services.AddScoped<IDivisionService, DivisionService>(); //division service
             services.AddScoped<IDepartmentService, DepartmentService>(); //department service
             services.AddScoped<ILocationService, LocationService>(); //location service
