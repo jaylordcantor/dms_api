@@ -75,6 +75,10 @@ namespace dms_api.Services.DivisionService
             try
             {
                 Division division = await _context.Divisions.FirstOrDefaultAsync(x => x.Id == updatedDivision.Id);
+
+                division.Id = updatedDivision.Id;
+                division.Name = updatedDivision.Name;
+
                 _context.Divisions.Update(division);
 
                 await _context.SaveChangesAsync();
