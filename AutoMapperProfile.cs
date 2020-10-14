@@ -1,4 +1,5 @@
 using AutoMapper;
+using dms_api.Dtos.Catalog;
 using dms_api.Dtos.Department;
 using dms_api.Dtos.Division;
 using dms_api.Dtos.Location;
@@ -11,6 +12,10 @@ namespace dms_api
     {
         public AutoMapperProfile()
         {
+            //Catalog
+            CreateMap<Catalog, GetCatalogDto>();
+            CreateMap<AddCatalogDto, Catalog>();
+
             //Division
             CreateMap<Division, GetDivisionDto>();
             CreateMap<AddDivisionDto, Division>();

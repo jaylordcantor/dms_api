@@ -7,6 +7,7 @@ namespace dms_api.Data
     {
         public DataContext(DbContextOptions<DataContext> options) : base(options){}
 
+        public DbSet<Catalog> Catalogs { get; set; }
         public DbSet<Department> Departments { get; set; }
         public DbSet<Division> Divisions{get; set;}
         public DbSet<Location> Locations { get; set; }

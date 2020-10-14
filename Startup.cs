@@ -2,6 +2,7 @@ using System.IO;
 using System.Text;
 using AutoMapper;
 using dms_api.Data;
+using dms_api.Services.CatalogService;
 using dms_api.Services.DepartmentService;
 using dms_api.Services.DivisionService;
 using dms_api.Services.LocationService;
@@ -33,6 +34,7 @@ namespace dms_api
             services.AddDbContext<DataContext>(x => x.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddControllers();
             services.AddScoped<IAuthRepository, AuthRepository>(); //authentication repository
+            services.AddScoped<ICatalogService, CatalogService>();
             services.AddScoped<IDivisionService, DivisionService>(); //division service
             services.AddScoped<IDepartmentService, DepartmentService>(); //department service
             services.AddScoped<ILocationService, LocationService>(); //location service
