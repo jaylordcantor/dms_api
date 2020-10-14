@@ -26,9 +26,9 @@ namespace dms_api.Controllers
         [HttpDelete("api/delete/{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            ServiceResponse<List<GetDepartmentDto>> reponse = await _departmentService.DeleteDepartment(id);
+            ServiceResponse<List<GetDepartmentDto>> response = await _departmentService.DeleteDepartment(id);
 
-            return Ok();
+            return Ok(response);
         }
 
         [HttpGet("api/get/all")]
