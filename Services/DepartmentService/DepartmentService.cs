@@ -80,6 +80,15 @@ namespace dms_api.Services.DepartmentService
             try
             {
                 Department department = await _context.Departments.FirstOrDefaultAsync(x => x.Id == updatedDepartment.Id);
+
+                department.Id = updatedDepartment.Id;
+                department.DivisionId = updatedDepartment.DivisionId;
+                department.Code = updatedDepartment.Code;
+                department.Name = updatedDepartment.Name;
+
+                _context.Departments.Update(department);
+                await _context.SaveChangesAsync();
+                
                 serviceResponse.Data = _mapper.Map<GetDepartmentDto>(department);
             }
             catch(Exception ex)
