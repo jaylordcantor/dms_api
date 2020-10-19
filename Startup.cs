@@ -7,6 +7,7 @@ using dms_api.Services.DepartmentService;
 using dms_api.Services.DivisionService;
 using dms_api.Services.DriveService;
 using dms_api.Services.LocationService;
+using dms_api.Services.RootDirectoryService;
 using dms_api.Services.SectionService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -38,8 +39,9 @@ namespace dms_api
             services.AddScoped<ICatalogService, CatalogService>();
             services.AddScoped<IDepartmentService, DepartmentService>(); //department service
             services.AddScoped<IDivisionService, DivisionService>(); //division service
-            services.AddScoped<IDriveService, DriveService>();
+            services.AddScoped<IDriveService, DriveService>(); // logical drive service
             services.AddScoped<ILocationService, LocationService>(); //location service
+            services.AddScoped<IRootDirectoryService, RootDirectoryService>();
             services.AddScoped<ISectionService, SectionService>(); //section service
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>{
