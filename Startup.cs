@@ -5,6 +5,7 @@ using dms_api.Data;
 using dms_api.Services.CatalogService;
 using dms_api.Services.DepartmentService;
 using dms_api.Services.DivisionService;
+using dms_api.Services.DriveService;
 using dms_api.Services.LocationService;
 using dms_api.Services.SectionService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -35,8 +36,9 @@ namespace dms_api
             services.AddControllers();
             services.AddScoped<IAuthRepository, AuthRepository>(); //authentication repository
             services.AddScoped<ICatalogService, CatalogService>();
-            services.AddScoped<IDivisionService, DivisionService>(); //division service
             services.AddScoped<IDepartmentService, DepartmentService>(); //department service
+            services.AddScoped<IDivisionService, DivisionService>(); //division service
+            services.AddScoped<IDriveService, DriveService>();
             services.AddScoped<ILocationService, LocationService>(); //location service
             services.AddScoped<ISectionService, SectionService>(); //section service
 
