@@ -2,6 +2,7 @@ using AutoMapper;
 using dms_api.Dtos.Catalog;
 using dms_api.Dtos.Department;
 using dms_api.Dtos.Division;
+using dms_api.Dtos.Document;
 using dms_api.Dtos.FileDirectory;
 using dms_api.Dtos.Location;
 using dms_api.Dtos.RootDirectory;
@@ -25,6 +26,10 @@ namespace dms_api
             //Department
             CreateMap<Department, GetDepartmentDto>();
             CreateMap<AddDepartmentDto, Department>();
+
+            //Document
+            CreateMap<Document, GetDocumentDto>();
+            CreateMap<AddDocumentDto, Document>();
 
             //FileDirectory
             CreateMap<FileDirectory, GetFileDirectoryDto>();

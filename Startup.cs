@@ -5,6 +5,7 @@ using dms_api.Data;
 using dms_api.Services.CatalogService;
 using dms_api.Services.DepartmentService;
 using dms_api.Services.DivisionService;
+using dms_api.Services.DocumentService;
 using dms_api.Services.DriveService;
 using dms_api.Services.FileDirectoryService;
 using dms_api.Services.LocationService;
@@ -13,6 +14,7 @@ using dms_api.Services.SectionService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -41,10 +43,12 @@ namespace dms_api
             services.AddScoped<IDepartmentService, DepartmentService>(); //department service
             services.AddScoped<IDivisionService, DivisionService>(); //division service
             services.AddScoped<IDriveService, DriveService>(); // logical drive service
-            services.AddScoped<IFileDirectoryService, FileDirectoryService>(); // file directory
+            services.AddScoped<IDocumentService, DocumentService>(); // document service
+            services.AddScoped<IFileDirectoryService, FileDirectoryService>(); // file directory service
             services.AddScoped<ILocationService, LocationService>(); //location service
             services.AddScoped<IRootDirectoryService, RootDirectoryService>();
             services.AddScoped<ISectionService, SectionService>(); //section service
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>(); //HttpAccessor
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>{
                 options.TokenValidationParameters = new TokenValidationParameters
@@ -70,14 +74,6 @@ namespace dms_api
 
             //app.UseHttpsRedirection();
 
-            // //make files in "wwwroot" directory accessible.
-            // app.UseStaticFiles();
-
-            // //access files in specific directory.
-            // app.UseStaticFiles(new StaticFileOptions {
-            //     FileProvider = new PhysicalFileProvider(@"D:\dms\documents"),
-            //     RequestPath = "/documents"
-            // });
 
             app.UseRouting();
 
