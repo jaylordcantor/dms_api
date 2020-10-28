@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace dms_api.Models
 {
     public class User
@@ -20,5 +22,6 @@ namespace dms_api.Models
         public string MI { get; set; }
         public string EmployeeNo { get; set; }
         public bool IsActive { get; set; }
+        public List<UserCatalog> UserCatalogs { get; set; }
     }
 }

@@ -16,5 +16,24 @@ namespace dms_api.Data
         public DbSet<RootDirectory> RootDirectories { get; set; }
         public DbSet<Section> Sections{get; set;}
         public DbSet<User> Users { get; set; }
+        public DbSet<UserCatalog> UserCatalogs { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<UserCatalog>()
+                .HasKey(uc => new {uc.UserId, uc.CatalogId});
+
+            modelBuilder.Entity<UserCatalog>()
+                .HasOne(c => c.Catalog)
+                .WithMany(uc => uc.UserCatalogs)
+                .HasForeignKey(c => c.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<UserCatalog>()
+                .HasOne(u => u.User)
+                .WithMany(uc => uc.UserCatalogs)
+                .HasForeignKey(u => u.CatalogId)
+                .OnDelete(DeleteBehavior.Restrict);
+        }
     }
 }

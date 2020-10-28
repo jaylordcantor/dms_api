@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace dms_api.Models
 {
     public class Catalog
@@ -9,5 +11,6 @@ namespace dms_api.Models
         public Section Section { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
+        public List<UserCatalog> UserCatalogs { get; set; }
     }
 }
