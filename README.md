@@ -1,6 +1,12 @@
 # SPI Document Management System REST API
 
+## How to use?
+
+The consumption of this API was below, follow the order of server request from top to bottom of this markdown in order for this API works correctly. 
+
 ## Logical Drive
+
+
 `{{host}}/drive/api/drives`
 
 
