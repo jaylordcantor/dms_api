@@ -7,7 +7,7 @@ The consumption of this API was below, follow the order of server request from t
 ## Logical Drive
 
 
-` ##### {{host}}/drive/api/drives`
+##### `{{host}}/drive/api/drives`
 
 
 This will return a result that shown below:
