@@ -1,3 +1,4 @@
+using System.Linq;
 using AutoMapper;
 using dms_api.Dtos.Catalog;
 using dms_api.Dtos.Department;
@@ -7,6 +8,7 @@ using dms_api.Dtos.FileDirectory;
 using dms_api.Dtos.Location;
 using dms_api.Dtos.RootDirectory;
 using dms_api.Dtos.Section;
+using dms_api.Dtos.User;
 using dms_api.Models;
 
 namespace dms_api
@@ -46,6 +48,10 @@ namespace dms_api
             //Section
             CreateMap<Section, GetSectionDto>();
             CreateMap<AddSectionDto, Section>();
+
+            //UserCatalog
+            CreateMap<User, GetUserDto>()
+                .ForMember(dto => dto.Catalogs, u => u.MapFrom(u => u.UserCatalogs.Select(uc => uc.Catalog)));
         }
     }
 }

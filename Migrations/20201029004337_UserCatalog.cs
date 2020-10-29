@@ -7,7 +7,7 @@ namespace dms_api.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "UserCatalog",
+                name: "UserCatalogs",
                 columns: table => new
                 {
                     UserId = table.Column<int>(nullable: false),
@@ -15,15 +15,15 @@ namespace dms_api.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserCatalog", x => new { x.UserId, x.CatalogId });
+                    table.PrimaryKey("PK_UserCatalogs", x => new { x.UserId, x.CatalogId });
                     table.ForeignKey(
-                        name: "FK_UserCatalog_Users_CatalogId",
+                        name: "FK_UserCatalogs_Users_CatalogId",
                         column: x => x.CatalogId,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_UserCatalog_Catalogs_UserId",
+                        name: "FK_UserCatalogs_Catalogs_UserId",
                         column: x => x.UserId,
                         principalTable: "Catalogs",
                         principalColumn: "Id",
@@ -31,15 +31,15 @@ namespace dms_api.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserCatalog_CatalogId",
-                table: "UserCatalog",
+                name: "IX_UserCatalogs_CatalogId",
+                table: "UserCatalogs",
                 column: "CatalogId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "UserCatalog");
+                name: "UserCatalogs");
         }
     }
 }

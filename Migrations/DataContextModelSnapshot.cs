@@ -285,7 +285,7 @@ namespace dms_api.Migrations
 
                     b.HasIndex("CatalogId");
 
-                    b.ToTable("UserCatalog");
+                    b.ToTable("UserCatalogs");
                 });
 
             modelBuilder.Entity("dms_api.Models.Catalog", b =>

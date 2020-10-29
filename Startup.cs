@@ -11,6 +11,7 @@ using dms_api.Services.FileDirectoryService;
 using dms_api.Services.LocationService;
 using dms_api.Services.RootDirectoryService;
 using dms_api.Services.SectionService;
+using dms_api.Services.UserCatalogService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -48,6 +49,8 @@ namespace dms_api
             services.AddScoped<ILocationService, LocationService>(); //location service
             services.AddScoped<IRootDirectoryService, RootDirectoryService>();
             services.AddScoped<ISectionService, SectionService>(); //section service
+            services.AddScoped<IUserCatalogService, UserCatalogService>(); //userCatalog service.
+
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>(); //HttpAccessor
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>{
