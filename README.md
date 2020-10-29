@@ -11,6 +11,7 @@ The consumption of this API was below, follow the order of server request from t
 
 
 This will return a result that shown below:
+> _Note:_ If the server has an access to shared drives that the server has no permission it will return a **not found** error.
 ```
 {
 "data": [
