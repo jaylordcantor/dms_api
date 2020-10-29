@@ -8,7 +8,7 @@ The consumption of this API was below, follow the order of server request from t
 
 ### Get Server Drive
 
-#### `{{host}}/drive/api/drives`
+#### (GET) `{{host}}/drive/api/drives`
 
 This will return a result that shown below:
 > _Note:_ If the server has an access to shared drives that the server has no permission it will return a **not found** error.
@@ -42,7 +42,7 @@ This will return a result that shown below:
 
 ### Add User Catalog
 
-#### `{{host}}/UserCatalog/api/post`
+#### (POST) `{{host}}/UserCatalog/api/post`
 
 To add user catalog permission you just need to supply these two(2) required fields.
 
