@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using dms_api.Dtos.User;
 using dms_api.Dtos.UserCatalog;
@@ -8,5 +9,8 @@ namespace dms_api.Services.UserCatalogService
     public interface IUserCatalogService
     {
         Task<ServiceResponse<GetUserDto>> AddUserCatalog(AddUserCatalogDto newUserCatalog);
+        Task<ServiceResponse<List<GetUserDto>>> GetUsersInUserCatalog();
+        Task<ServiceResponse<GetUserDto>> GetUserCatalogById(int id);
+        Task<ServiceResponse<List<GetUserDto>>> DeleteUserCatolog(DeleteUserCatalog deleteUserCatalog);
     }
 }

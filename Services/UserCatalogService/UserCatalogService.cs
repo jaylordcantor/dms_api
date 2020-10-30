@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using dms_api.Data;
@@ -68,6 +70,68 @@ namespace dms_api.Services.UserCatalogService
                 serviceResponse.Success = false;
                 serviceResponse.Message = ex.Message;
             }
+
+            return serviceResponse;
+        }
+
+        public async Task<ServiceResponse<List<GetUserDto>>> DeleteUserCatolog(DeleteUserCatalog deleteUserCatalog)
+        {
+            ServiceResponse<List<GetUserDto>> serviceResponse = new ServiceResponse<List<GetUserDto>>();
+
+            try
+            {
+                UserCatalog userCatalog = await _context.UserCatalogs.FirstOrDefaultAsync(uc => uc.UserId == deleteUserCatalog.UserId && uc.CatalogId == deleteUserCatalog.CatalogId);
+
+                if(userCatalog == null)
+                {
+                    serviceResponse.Success = false;
+                    serviceResponse.Message = "no record found";
+
+                    return serviceResponse;
+                }
+
+                _context.Remove(userCatalog);
+                await _context.SaveChangesAsync();
+
+                serviceResponse.Data = await (_context.Users.Select(u => _mapper.Map<GetUserDto>(u))).ToListAsync();
+            }
+            catch(Exception ex)
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = ex.Message;
+            }
+
+            return serviceResponse;
+        }
+
+        public async Task<ServiceResponse<List<GetUserDto>>> GetUsersInUserCatalog()
+        {
+            ServiceResponse<List<GetUserDto>> serviceResponse = new ServiceResponse<List<GetUserDto>>();
+            List<User> user = await _context.Users
+                .Include(u => u.Department)
+                .Include(u => u.Division)
+                .Include(u => u.Location)
+                .Include(u => u.Section)
+                .Include(u => u.UserCatalogs).ThenInclude(uc => uc.Catalog).ToListAsync();
+
+            serviceResponse.Data = await (_context.Users.Select(u => _mapper.Map<GetUserDto>(u))).ToListAsync();
+
+            return serviceResponse;
+        }
+
+        public async Task<ServiceResponse<GetUserDto>> GetUserCatalogById(int id)
+        {
+            ServiceResponse<GetUserDto> serviceResponse = new ServiceResponse<GetUserDto>();
+
+            User user = await _context.Users
+                    .Include(u => u.Department)
+                    .Include(u => u.Division)
+                    .Include(u => u.Location)
+                    .Include(u => u.Section)
+                    .Include(u => u.UserCatalogs).ThenInclude(uc => uc.Catalog)
+                    .FirstOrDefaultAsync(u => u.Id == id);
+
+            serviceResponse.Data = _mapper.Map<GetUserDto>(user);
 
             return serviceResponse;
         }
