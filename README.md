@@ -1,4 +1,4 @@
-# SPI Document Management System REST API
+# Document Management System REST API
 
 ## How to use
 
