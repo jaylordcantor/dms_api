@@ -64,6 +64,8 @@ namespace dms_api
                 };
             });
 
+            services.AddCors();
+            
             services.AddAutoMapper(typeof(Startup));
         }
 
@@ -77,6 +79,12 @@ namespace dms_api
 
             //app.UseHttpsRedirection();
 
+            // global cors policy
+            app.UseCors(x => x
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .SetIsOriginAllowed(origin => true) // allow any origin
+                .AllowCredentials()); // allow credentials
 
             app.UseRouting();
 
