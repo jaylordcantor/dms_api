@@ -29,7 +29,7 @@ namespace dms_api.Services.DepartmentService
             await _context.Departments.AddAsync(department);
             await _context.SaveChangesAsync();
 
-            serviceResponse.Data = (_context.Departments.Select(x => _mapper.Map<GetDepartmentDto>(x))).ToList();
+            serviceResponse.Data = (_context.Departments.Include(x=>x.Division).Select(x => _mapper.Map<GetDepartmentDto>(x))).ToList();
 
             return serviceResponse;
         }
@@ -44,7 +44,7 @@ namespace dms_api.Services.DepartmentService
                 _context.Departments.Remove(department);
                 await _context.SaveChangesAsync();
 
-                serviceResponse.Data = (_context.Departments.Select(x => _mapper.Map<GetDepartmentDto>(x))).ToList();
+                serviceResponse.Data = (_context.Departments.Include(x=>x.Division).Select(x => _mapper.Map<GetDepartmentDto>(x))).ToList();
             }
             catch(Exception ex)
             {
@@ -59,7 +59,7 @@ namespace dms_api.Services.DepartmentService
         {
             ServiceResponse<List<GetDepartmentDto>> serviceResponse = new ServiceResponse<List<GetDepartmentDto>>();
             List<Department> departments = await _context.Departments.ToListAsync();
-            serviceResponse.Data = _context.Departments.Select(x => _mapper.Map<GetDepartmentDto>(x)).ToList();
+            serviceResponse.Data = _context.Departments.Include(x=>x.Division).Select(x => _mapper.Map<GetDepartmentDto>(x)).ToList();
 
             return serviceResponse;
         }
@@ -68,7 +68,7 @@ namespace dms_api.Services.DepartmentService
         {
             ServiceResponse<GetDepartmentDto> serviceResponse = new ServiceResponse<GetDepartmentDto>();
 
-            Department department = await _context.Departments.FirstOrDefaultAsync(x => x.Id == id);
+            Department department = await _context.Departments.Include(x => x.Division).FirstOrDefaultAsync(x => x.Id == id);
             serviceResponse.Data = _mapper.Map<GetDepartmentDto>(department);
 
             return serviceResponse;
