@@ -44,7 +44,12 @@ namespace dms_api.Services.SectionService
                 Section section = await _context.Sections.FirstAsync(x => x.Id == id);
                 _context.Sections.Remove(section);
                 await _context.SaveChangesAsync();
-                serviceResponse.Data = await (_context.Sections.Select(x => _mapper.Map<GetSectionDto>(x))).ToListAsync();
+                serviceResponse.Data = await (
+                    _context.Sections
+                    .Include(x => x.Department)
+                    .Include(s=>s.Department.Division)
+                    .Select(x => _mapper.Map<GetSectionDto>(x))
+                ).ToListAsync();
             }
             catch(Exception ex)
             {
@@ -58,7 +63,11 @@ namespace dms_api.Services.SectionService
         public async Task<ServiceResponse<List<GetSectionDto>>> GetAllSection()
         {
             ServiceResponse<List<GetSectionDto>> serviceResponse = new ServiceResponse<List<GetSectionDto>>();
-            List<Section> section = await _context.Sections.Include(s => s.Department).ToListAsync();
+            List<Section> section = await (
+                _context.Sections
+                .Include(s => s.Department)
+                .Include(s=>s.Department.Division)
+            ).ToListAsync();
 
             serviceResponse.Data = section.Select(x => _mapper.Map<GetSectionDto>(x)).ToList();
 
@@ -69,17 +78,25 @@ namespace dms_api.Services.SectionService
         {
             ServiceResponse<List<GetSectionDto>> serviceResponse = new ServiceResponse<List<GetSectionDto>>();
 
-            List<Section> section = await _context.Sections.Include(s => s.Department).Where(s => s.DepartmentId == id).ToListAsync();
+            List<Section> section = await (
+                _context.Sections
+                .Include(s => s.Department)
+                .Include(s=>s.Department.Division)
+                .Where(s => s.DepartmentId == id)
+            ).ToListAsync();
 
             serviceResponse.Data = section.Select(x => _mapper.Map<GetSectionDto>(x)).ToList();
-            
+
             return serviceResponse;
         }
 
         public async Task<ServiceResponse<GetSectionDto>> GetSectionById(int id)
         {
             ServiceResponse<GetSectionDto> serviceResponse = new ServiceResponse<GetSectionDto>();
-            Section section = await _context.Sections.Include(s => s.Department).FirstOrDefaultAsync(x => x.Id == id);
+            Section section = await _context.Sections
+                .Include(s => s.Department)
+                .Include(s=>s.Department.Division)
+                .FirstOrDefaultAsync(x => x.Id == id);
 
             serviceResponse.Data = _mapper.Map<GetSectionDto>(section);
 
@@ -92,7 +109,8 @@ namespace dms_api.Services.SectionService
 
             try
             {
-                Section section = await _context.Sections.FirstOrDefaultAsync(x => x.Id == updatedSection.Id);
+                Section section = await _context.Sections
+                    .FirstOrDefaultAsync(x => x.Id == updatedSection.Id);
 
 
                 section.Id = updatedSection.Id;
