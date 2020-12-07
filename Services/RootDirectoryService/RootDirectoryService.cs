@@ -41,7 +41,12 @@ namespace dms_api.Services.RootDirectoryService
             await _context.RootDirectories.AddAsync(rootDirectory);
             await _context.SaveChangesAsync();
 
-            serviceResponse.Data = await(_context.RootDirectories.Select(r => _mapper.Map<GetRootDirectoryDto>(r))).ToListAsync();
+            serviceResponse.Data = await(
+                _context.RootDirectories
+                .Include(r => r.Department)
+                .Include(r => r.Department.Division)
+                .Select(r => _mapper.Map<GetRootDirectoryDto>(r))
+            ).ToListAsync();
 
             return serviceResponse;
         }
@@ -49,9 +54,14 @@ namespace dms_api.Services.RootDirectoryService
         public async Task<ServiceResponse<List<GetRootDirectoryDto>>> GetAllRootDirectory()
         {
             ServiceResponse<List<GetRootDirectoryDto>> serviceResponse = new ServiceResponse<List<GetRootDirectoryDto>>();
-            List<RootDirectory> rootDirectories = await _context.RootDirectories.ToListAsync();
+            List<RootDirectory> rootDirectories = await _context.RootDirectories
+                .Include(r => r.Department)
+                .Include(r => r.Department.Division)
+                .ToListAsync();
 
-            serviceResponse.Data = await _context.RootDirectories.Include(r => r.Department).Select(r => _mapper.Map<GetRootDirectoryDto>(r)).ToListAsync();
+            serviceResponse.Data = rootDirectories
+                .Select(r => _mapper.Map<GetRootDirectoryDto>(r))
+                .ToList();
 
             return serviceResponse;
         }
@@ -59,7 +69,10 @@ namespace dms_api.Services.RootDirectoryService
         public async Task<ServiceResponse<GetRootDirectoryDto>> GetRootDirectoryById(int id)
         {
             ServiceResponse<GetRootDirectoryDto> serviceResponse = new ServiceResponse<GetRootDirectoryDto>();
-            RootDirectory rootDirectory = await _context.RootDirectories.Include(r => r.Department).FirstOrDefaultAsync(r => r.Id == id);
+            RootDirectory rootDirectory = await _context.RootDirectories
+                .Include(r => r.Department)
+                .Include(r => r.Department.Division)
+                .FirstOrDefaultAsync(r => r.Id == id);
 
             serviceResponse.Data = _mapper.Map<GetRootDirectoryDto>(rootDirectory);
 
