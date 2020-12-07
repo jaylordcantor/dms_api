@@ -28,7 +28,10 @@ namespace dms_api.Services.CatalogService
             await _context.Catalogs.AddAsync(catalog);
             await _context.SaveChangesAsync();
 
-            serviceResponse.Data = await (_context.Catalogs.Select(c => _mapper.Map<GetCatalogDto>(c))).ToListAsync();
+            serviceResponse.Data = await (
+                _context.Catalogs
+                .Select(c => _mapper.Map<GetCatalogDto>(c))
+            ).ToListAsync();
 
             return serviceResponse;
         }
@@ -42,7 +45,10 @@ namespace dms_api.Services.CatalogService
                 _context.Catalogs.Remove(catalog);
                 await _context.SaveChangesAsync();
 
-                serviceResponse.Data = await (_context.Catalogs.Select(c => _mapper.Map<GetCatalogDto>(c))).ToListAsync();
+                serviceResponse.Data = await (
+                    _context.Catalogs
+                    .Select(c => _mapper.Map<GetCatalogDto>(c))
+                ).ToListAsync();
             }
             catch(Exception ex)
             {
@@ -57,9 +63,15 @@ namespace dms_api.Services.CatalogService
         public async Task<ServiceResponse<List<GetCatalogDto>>> GetAllCatalog()
         {
             ServiceResponse<List<GetCatalogDto>> serviceResponse = new ServiceResponse<List<GetCatalogDto>>();
-            List<Catalog> catalog = await _context.Catalogs.ToListAsync();
+            List<Catalog> catalogs = await _context.Catalogs
+                .Include(s => s.Section)
+                .Include(s => s.Department)
+                .Include(s => s.Department.Division)
+                .ToListAsync();
 
-            serviceResponse.Data = _context.Catalogs.Select(c => _mapper.Map<GetCatalogDto>(c)).ToList();
+            serviceResponse.Data = catalogs
+                .Select(c => _mapper.Map<GetCatalogDto>(c))
+                .ToList();
 
             return serviceResponse;
         }
@@ -67,9 +79,16 @@ namespace dms_api.Services.CatalogService
         public async Task<ServiceResponse<List<GetCatalogDto>>> GetCatalogByDepartment(int id)
         {
             ServiceResponse<List<GetCatalogDto>> serviceResponse = new ServiceResponse<List<GetCatalogDto>>();
-            List<Catalog> catalog = await _context.Catalogs.Where(c => c.DepartmentId == id).ToListAsync();
+            List<Catalog> catalogs = await _context.Catalogs
+                .Include(s => s.Section)
+                .Include(s => s.Department)
+                .Include(s => s.Department.Division)
+                .Where(c => c.DepartmentId == id)
+                .ToListAsync();
 
-            serviceResponse.Data = await _context.Catalogs.Select(c => _mapper.Map<GetCatalogDto>(c)).ToListAsync();
+            serviceResponse.Data =catalogs
+                .Select(c => _mapper.Map<GetCatalogDto>(c))
+                .ToList();
 
             return serviceResponse;
         }
@@ -77,7 +96,11 @@ namespace dms_api.Services.CatalogService
         public async Task<ServiceResponse<GetCatalogDto>> GetCatalogById(int id)
         {
             ServiceResponse<GetCatalogDto> serviceResponse = new ServiceResponse<GetCatalogDto>();
-            Catalog catalog = await _context.Catalogs.FirstOrDefaultAsync(c => c.Id == id);
+            Catalog catalog = await _context.Catalogs
+                .Include(s => s.Section)
+                .Include(s => s.Department)
+                .Include(s => s.Department.Division)
+                .FirstOrDefaultAsync(c => c.Id == id);
 
             serviceResponse.Data = _mapper.Map<GetCatalogDto>(catalog);
 
@@ -87,9 +110,16 @@ namespace dms_api.Services.CatalogService
         public async Task<ServiceResponse<List<GetCatalogDto>>> GetCatalogBySection(int id)
         {
             ServiceResponse<List<GetCatalogDto>> serviceResponse = new ServiceResponse<List<GetCatalogDto>>();
-            List<Catalog> catalog = await _context.Catalogs.Where(c => c.SectionId == id).ToListAsync();
+            List<Catalog> catalogs = await _context.Catalogs
+                .Where(c => c.SectionId == id)
+                .Include(s => s.Section)
+                .Include(s => s.Department)
+                .Include(s => s.Department.Division)
+                .ToListAsync();
 
-            serviceResponse.Data = await _context.Catalogs.Select(c => _mapper.Map<GetCatalogDto>(c)).ToListAsync();
+            serviceResponse.Data = catalogs
+                .Select(c => _mapper.Map<GetCatalogDto>(c))
+                .ToList();
 
             return serviceResponse;
         }
@@ -100,7 +130,11 @@ namespace dms_api.Services.CatalogService
 
             try
             {
-                Catalog catalog = await _context.Catalogs.FirstOrDefaultAsync(c => c.Id == updatedCatalog.Id);
+                Catalog catalog = await _context.Catalogs
+                    .Include(s => s.Section)
+                    .Include(s => s.Department)
+                    .Include(s => s.Department.Division)
+                    .FirstOrDefaultAsync(c => c.Id == updatedCatalog.Id);
 
                 catalog.Id = updatedCatalog.Id;
                 catalog.DepartmentId = updatedCatalog.DepartmentId;
