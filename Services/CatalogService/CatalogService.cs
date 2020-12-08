@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using dms_api.Data;
 using dms_api.Dtos.Catalog;
 using dms_api.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace dms_api.Services.CatalogService
@@ -14,12 +16,16 @@ namespace dms_api.Services.CatalogService
     {
         private readonly IMapper _mapper;
         private readonly DataContext _context;
-        public CatalogService(IMapper mapper, DataContext context)
+        private readonly IHttpContextAccessor _accessor;
+        public CatalogService(IMapper mapper, IHttpContextAccessor accessor, DataContext context)
         {
+            _accessor = accessor;
             _context = context;
             _mapper = mapper;
 
         }
+
+        private int GetUserId() => int.Parse(_accessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
         public async Task<ServiceResponse<List<GetCatalogDto>>> AddCatalog(AddCatalogDto newCatalog)
         {
             ServiceResponse<List<GetCatalogDto>> serviceResponse = new ServiceResponse<List<GetCatalogDto>>();
@@ -50,7 +56,7 @@ namespace dms_api.Services.CatalogService
                     .Select(c => _mapper.Map<GetCatalogDto>(c))
                 ).ToListAsync();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 serviceResponse.Success = false;
                 serviceResponse.Message = ex.Message;
@@ -86,7 +92,7 @@ namespace dms_api.Services.CatalogService
                 .Where(c => c.DepartmentId == id)
                 .ToListAsync();
 
-            serviceResponse.Data =catalogs
+            serviceResponse.Data = catalogs
                 .Select(c => _mapper.Map<GetCatalogDto>(c))
                 .ToList();
 
@@ -148,7 +154,7 @@ namespace dms_api.Services.CatalogService
                 serviceResponse.Data = _mapper.Map<GetCatalogDto>(catalog);
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 serviceResponse.Success = false;
                 serviceResponse.Message = ex.Message;

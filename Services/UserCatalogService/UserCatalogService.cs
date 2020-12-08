@@ -1,13 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using dms_api.Data;
 using dms_api.Dtos.User;
 using dms_api.Dtos.UserCatalog;
 using dms_api.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+
 
 namespace dms_api.Services.UserCatalogService
 {
@@ -15,8 +18,10 @@ namespace dms_api.Services.UserCatalogService
     {
         private readonly IMapper _mapper;
         private readonly DataContext _context;
-        public UserCatalogService(DataContext context, IMapper mapper)
+        private readonly IHttpContextAccessor _accessor;
+        public UserCatalogService(DataContext context, IHttpContextAccessor accessor, IMapper mapper)
         {
+            _accessor = accessor;
             _context = context;
             _mapper = mapper;
 
@@ -35,7 +40,7 @@ namespace dms_api.Services.UserCatalogService
                     .Include(u => u.UserCatalogs).ThenInclude(uc => uc.Catalog)
                     .FirstOrDefaultAsync(u => u.Id == newUserCatalog.UserId);
 
-                if(user == null)
+                if (user == null)
                 {
                     serviceResponse.Success = false;
                     serviceResponse.Message = "User not found";
@@ -43,10 +48,10 @@ namespace dms_api.Services.UserCatalogService
                     return serviceResponse;
                 }
 
-                Catalog catalog =await _context.Catalogs
+                Catalog catalog = await _context.Catalogs
                     .FirstOrDefaultAsync(c => c.Id == newUserCatalog.CatalogId);
 
-                if(catalog == null)
+                if (catalog == null)
                 {
                     serviceResponse.Success = false;
                     serviceResponse.Message = "Catalog not found";
@@ -65,7 +70,7 @@ namespace dms_api.Services.UserCatalogService
 
                 serviceResponse.Data = _mapper.Map<GetUserDto>(user);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 serviceResponse.Success = false;
                 serviceResponse.Message = ex.Message;
@@ -82,7 +87,7 @@ namespace dms_api.Services.UserCatalogService
             {
                 UserCatalog userCatalog = await _context.UserCatalogs.FirstOrDefaultAsync(uc => uc.UserId == deleteUserCatalog.UserId && uc.CatalogId == deleteUserCatalog.CatalogId);
 
-                if(userCatalog == null)
+                if (userCatalog == null)
                 {
                     serviceResponse.Success = false;
                     serviceResponse.Message = "no record found";
@@ -95,7 +100,7 @@ namespace dms_api.Services.UserCatalogService
 
                 serviceResponse.Data = await (_context.Users.Select(u => _mapper.Map<GetUserDto>(u))).ToListAsync();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 serviceResponse.Success = false;
                 serviceResponse.Message = ex.Message;
@@ -112,10 +117,12 @@ namespace dms_api.Services.UserCatalogService
                 .Include(u => u.Division)
                 .Include(u => u.Location)
                 .Include(u => u.Section)
-                .Include(u => u.UserCatalogs).ThenInclude(uc => uc.Catalog).ToListAsync();
+                .Include(u => u.UserCatalogs)
+                .ThenInclude(uc => uc.Catalog)
+                .ToListAsync();
 
             serviceResponse.Data = await (_context.Users.Select(u => _mapper.Map<GetUserDto>(u))).ToListAsync();
-
+            serviceResponse.Message = _accessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
             return serviceResponse;
         }
 
@@ -132,6 +139,7 @@ namespace dms_api.Services.UserCatalogService
                     .FirstOrDefaultAsync(u => u.Id == id);
 
             serviceResponse.Data = _mapper.Map<GetUserDto>(user);
+            serviceResponse.Message = "hello" + int.Parse(_accessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
 
             return serviceResponse;
         }

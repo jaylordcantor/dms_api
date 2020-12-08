@@ -1,6 +1,8 @@
 using System.Threading.Tasks;
 using dms_api.Dtos.UserCatalog;
+using dms_api.Models;
 using dms_api.Services.UserCatalogService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace dms_api.Controllers
