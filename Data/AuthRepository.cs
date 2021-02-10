@@ -6,6 +6,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using dms_api.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -16,8 +17,10 @@ namespace dms_api.Data
     {
         private readonly DataContext _context;
         private readonly IConfiguration _configuration;
-        public AuthRepository(DataContext context, IConfiguration configuration)
+        private readonly IHttpContextAccessor _accessor;
+        public AuthRepository(DataContext context, IHttpContextAccessor accessor, IConfiguration configuration)
         {
+            _accessor = accessor;
             _configuration = configuration;
             _context = context;
 
@@ -63,7 +66,7 @@ namespace dms_api.Data
             if (user == null)
             {
                 response.Success = false;
-                response.Message = "User not found";
+                response.Message ="User not Found";
             }
             else if (!VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt))
             {
@@ -73,6 +76,7 @@ namespace dms_api.Data
             else
             {
                 response.Data = CreateToken(user);
+                response.Message =  _accessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
             }
             return response;
         }

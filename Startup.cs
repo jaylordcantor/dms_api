@@ -53,7 +53,8 @@ namespace dms_api
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>(); //HttpAccessor
 
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>{
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+            {
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
@@ -65,7 +66,7 @@ namespace dms_api
             });
 
             services.AddCors();
-            
+
             services.AddAutoMapper(typeof(Startup));
         }
 
@@ -90,7 +91,7 @@ namespace dms_api
 
             app.UseAuthentication();
 
-            app.UseAuthorization();
+            //app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

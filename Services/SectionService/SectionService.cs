@@ -30,7 +30,10 @@ namespace dms_api.Services.SectionService
             await _context.Sections.AddAsync(section);
             await _context.SaveChangesAsync();
 
-            serviceResponse.Data = await (_context.Sections.Select(x => _mapper.Map<GetSectionDto>(x))).ToListAsync();
+            serviceResponse.Data = await (_context.Sections
+                .Include(x => x.Department)
+                .Include(s => s.Department.Division)
+                .Select(x => _mapper.Map<GetSectionDto>(x))).ToListAsync();
 
             return serviceResponse;
         }
@@ -47,11 +50,11 @@ namespace dms_api.Services.SectionService
                 serviceResponse.Data = await (
                     _context.Sections
                     .Include(x => x.Department)
-                    .Include(s=>s.Department.Division)
+                    .Include(s => s.Department.Division)
                     .Select(x => _mapper.Map<GetSectionDto>(x))
                 ).ToListAsync();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 serviceResponse.Success = false;
                 serviceResponse.Message = ex.Message;
@@ -66,7 +69,7 @@ namespace dms_api.Services.SectionService
             List<Section> section = await (
                 _context.Sections
                 .Include(s => s.Department)
-                .Include(s=>s.Department.Division)
+                .Include(s => s.Department.Division)
             ).ToListAsync();
 
             serviceResponse.Data = section.Select(x => _mapper.Map<GetSectionDto>(x)).ToList();
@@ -81,7 +84,7 @@ namespace dms_api.Services.SectionService
             List<Section> section = await (
                 _context.Sections
                 .Include(s => s.Department)
-                .Include(s=>s.Department.Division)
+                .Include(s => s.Department.Division)
                 .Where(s => s.DepartmentId == id)
             ).ToListAsync();
 
@@ -95,7 +98,7 @@ namespace dms_api.Services.SectionService
             ServiceResponse<GetSectionDto> serviceResponse = new ServiceResponse<GetSectionDto>();
             Section section = await _context.Sections
                 .Include(s => s.Department)
-                .Include(s=>s.Department.Division)
+                .Include(s => s.Department.Division)
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             serviceResponse.Data = _mapper.Map<GetSectionDto>(section);
@@ -124,7 +127,7 @@ namespace dms_api.Services.SectionService
 
                 serviceResponse.Data = _mapper.Map<GetSectionDto>(section);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 serviceResponse.Success = false;
                 serviceResponse.Message = ex.Message;
