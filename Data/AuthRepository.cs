@@ -141,6 +141,7 @@ namespace dms_api.Data
 
             serviceResponse.Data = await _context.Users
             .Include(d => d.Department)
+            .Include(d => d.Department.Division)
             .Include(d => d.Location)
             .Include(d => d.Section)
             .Select(d => _mapper.Map<User>(d)).ToListAsync();
