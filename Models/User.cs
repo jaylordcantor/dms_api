@@ -5,8 +5,6 @@ namespace dms_api.Models
     public class User
     {
         public int Id { get; set; }
-        public int? DivisionId { get; set; }
-        public Division Division { get; set; }
         public int DepartmentId { get; set; }
         public Department Department { get; set; }
         public int? SectionId { get; set; }

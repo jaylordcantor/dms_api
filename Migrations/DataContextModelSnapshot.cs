@@ -224,9 +224,6 @@ namespace dms_api.Migrations
                     b.Property<int>("DepartmentId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("DivisionId")
-                        .HasColumnType("int");
-
                     b.Property<string>("EmployeeNo")
                         .HasColumnType("nvarchar(max)");
 
@@ -263,8 +260,6 @@ namespace dms_api.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("DepartmentId");
-
-                    b.HasIndex("DivisionId");
 
                     b.HasIndex("LocationId");
 
@@ -359,10 +354,6 @@ namespace dms_api.Migrations
                         .HasForeignKey("DepartmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("dms_api.Models.Division", "Division")
-                        .WithMany()
-                        .HasForeignKey("DivisionId");
 
                     b.HasOne("dms_api.Models.Location", "Location")
                         .WithMany()

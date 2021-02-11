@@ -6,6 +6,18 @@ namespace dms_api.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropForeignKey(
+                name: "FK_Users_Divisions_DivisionId",
+                table: "Users");
+
+            migrationBuilder.DropIndex(
+                name: "IX_Users_DivisionId",
+                table: "Users");
+
+            migrationBuilder.DropColumn(
+                name: "DivisionId",
+                table: "Users");
+
             migrationBuilder.CreateTable(
                 name: "UserCatalogs",
                 columns: table => new
@@ -40,6 +52,25 @@ namespace dms_api.Migrations
         {
             migrationBuilder.DropTable(
                 name: "UserCatalogs");
+
+            migrationBuilder.AddColumn<int>(
+                name: "DivisionId",
+                table: "Users",
+                type: "int",
+                nullable: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_DivisionId",
+                table: "Users",
+                column: "DivisionId");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Users_Divisions_DivisionId",
+                table: "Users",
+                column: "DivisionId",
+                principalTable: "Divisions",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
         }
     }
 }

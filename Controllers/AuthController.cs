@@ -34,7 +34,6 @@ namespace dms_api.Controllers
             ServiceResponse<int> response = await _authRepository.Register(
                 new User
                 {
-                    DivisionId = request.DivisionId,
                     DepartmentId = request.DepartmentId,
                     SectionId = request.SectionId,
                     LocationId = request.LocationId,

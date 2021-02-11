@@ -34,7 +34,6 @@ namespace dms_api.Services.UserCatalogService
             {
                 User user = await _context.Users
                     .Include(u => u.Department)
-                    .Include(u => u.Division)
                     .Include(u => u.Location)
                     .Include(u => u.Section)
                     .Include(u => u.UserCatalogs).ThenInclude(uc => uc.Catalog)
@@ -114,7 +113,6 @@ namespace dms_api.Services.UserCatalogService
             ServiceResponse<List<GetUserDto>> serviceResponse = new ServiceResponse<List<GetUserDto>>();
             List<User> user = await _context.Users
                 .Include(u => u.Department)
-                .Include(u => u.Division)
                 .Include(u => u.Location)
                 .Include(u => u.Section)
                 .Include(u => u.UserCatalogs)
@@ -132,7 +130,6 @@ namespace dms_api.Services.UserCatalogService
 
             User user = await _context.Users
                     .Include(u => u.Department)
-                    .Include(u => u.Division)
                     .Include(u => u.Location)
                     .Include(u => u.Section)
                     .Include(u => u.UserCatalogs).ThenInclude(uc => uc.Catalog)
