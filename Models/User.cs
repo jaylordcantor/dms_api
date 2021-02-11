@@ -11,7 +11,7 @@ namespace dms_api.Models
         public Section Section { get; set; }
         public int LocationId { get; set; }
         public Location Location { get; set; }
-        public Role Role { get; set; }
+        public int Role { get; set; }
         public string Username { get; set; }
         public byte[] PasswordHash { get; set; }
         public byte[] PasswordSalt { get; set; }

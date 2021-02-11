@@ -14,7 +14,7 @@ namespace dms_api.Dtos.User
         public GetSectionDto Section { get; set; }
         public int LocationId { get; set; }
         public GetLocationDto Location { get; set; }
-        public Role Role { get; set; }
+        public int Role { get; set; }
         public string Username { get; set; }
         public string Password { get; set; }
         public string LastName { get; set; }

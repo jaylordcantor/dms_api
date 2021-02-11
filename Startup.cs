@@ -9,6 +9,7 @@ using dms_api.Services.DocumentService;
 using dms_api.Services.DriveService;
 using dms_api.Services.FileDirectoryService;
 using dms_api.Services.LocationService;
+using dms_api.Services.RoleService;
 using dms_api.Services.RootDirectoryService;
 using dms_api.Services.SectionService;
 using dms_api.Services.UserCatalogService;
@@ -50,6 +51,7 @@ namespace dms_api
             services.AddScoped<IRootDirectoryService, RootDirectoryService>();
             services.AddScoped<ISectionService, SectionService>(); //section service
             services.AddScoped<IUserCatalogService, UserCatalogService>(); //userCatalog service.
+            services.AddScoped<IRoleService, RoleService>(); // role service.
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>(); //HttpAccessor
 
