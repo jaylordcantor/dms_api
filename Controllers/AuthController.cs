@@ -20,7 +20,7 @@ namespace dms_api.Controllers
         public async Task<IActionResult> Login(UserLoginDto request)
         {
             ServiceResponse<string> response = await _authRepository.Login(request.Username, request.Password);
-            if(!response.Success)
+            if (!response.Success)
             {
                 return BadRequest(response);
             }
@@ -32,7 +32,8 @@ namespace dms_api.Controllers
         {
 
             ServiceResponse<int> response = await _authRepository.Register(
-                new User {
+                new User
+                {
                     DivisionId = request.DivisionId,
                     DepartmentId = request.DepartmentId,
                     SectionId = request.SectionId,
@@ -46,12 +47,18 @@ namespace dms_api.Controllers
                     IsActive = request.IsActive
                 }, request.Password);
 
-            if(!response.Success)
+            if (!response.Success)
             {
                 return BadRequest(response);
             }
 
             return Ok(response);
+        }
+
+        [HttpGet("api/get/all")]
+        public async Task<IActionResult> List()
+        {
+            return Ok(await _authRepository.GetAllUsers());
         }
     }
 }

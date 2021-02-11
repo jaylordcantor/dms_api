@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
+using dms_api.Dtos.User;
 using dms_api.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -18,8 +21,10 @@ namespace dms_api.Data
         private readonly DataContext _context;
         private readonly IConfiguration _configuration;
         private readonly IHttpContextAccessor _accessor;
-        public AuthRepository(DataContext context, IHttpContextAccessor accessor, IConfiguration configuration)
+        private readonly IMapper _mapper;
+        public AuthRepository(DataContext context, IHttpContextAccessor accessor, IConfiguration configuration, IMapper mapper)
         {
+            _mapper = mapper;
             _accessor = accessor;
             _configuration = configuration;
             _context = context;
@@ -66,7 +71,7 @@ namespace dms_api.Data
             if (user == null)
             {
                 response.Success = false;
-                response.Message ="User not Found";
+                response.Message = "User not Found";
             }
             else if (!VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt))
             {
@@ -76,7 +81,7 @@ namespace dms_api.Data
             else
             {
                 response.Data = CreateToken(user);
-                response.Message =  _accessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                response.Message = _accessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
             }
             return response;
         }
@@ -128,6 +133,20 @@ namespace dms_api.Data
                 }
             }
             return true;
+        }
+
+        public async Task<ServiceResponse<List<User>>> GetAllUsers()
+        {
+            ServiceResponse<List<User>> serviceResponse = new ServiceResponse<List<User>>();
+
+            serviceResponse.Data = await _context.Users
+            .Include(d => d.Department)
+            .Include(d => d.Division)
+            .Include(d => d.Location)
+            .Include(d => d.Section)
+            .Select(d => _mapper.Map<User>(d)).ToListAsync();
+
+            return serviceResponse;
         }
     }
 }
