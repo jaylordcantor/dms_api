@@ -10,7 +10,6 @@ namespace dms_api.Dtos.User
     public class GetUserDto
     {
         public int Id { get; set; }
-        public GetDivisionDto Division { get; set; }
         public GetDepartmentDto Department { get; set; }
         public GetSectionDto Section { get; set; }
         public GetLocationDto Location { get; set; }

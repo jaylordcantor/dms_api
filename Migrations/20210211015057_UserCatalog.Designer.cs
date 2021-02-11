@@ -10,7 +10,7 @@ using dms_api.Data;
 namespace dms_api.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20210211014059_UserCatalog")]
+    [Migration("20210211015057_UserCatalog")]
     partial class UserCatalog
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

@@ -8,8 +8,6 @@ namespace dms_api.Dtos.User
 {
     public class UserRegisterDto
     {
-        public int? DivisionId { get; set; }
-        public GetDivisionDto Division { get; set; }
         public int DepartmentId { get; set; }
         public GetDepartmentDto Department { get; set; }
         public int? SectionId { get; set; }
