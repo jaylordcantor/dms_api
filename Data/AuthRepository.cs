@@ -86,10 +86,9 @@ namespace dms_api.Data
             return response;
         }
 
-        public async Task<ServiceResponse<int>> Register(User user, string password)
+        public async Task<ServiceResponse<List<User>>> Register(User user, string password)
         {
-            ServiceResponse<int> response = new ServiceResponse<int>();
-
+            ServiceResponse<List<User>> response = new ServiceResponse<List<User>>();
             if (await UserExists(user.Username))
             {
                 response.Success = false;
@@ -106,7 +105,12 @@ namespace dms_api.Data
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
 
-            response.Data = user.Id;
+            response.Data = await _context.Users
+                .Include(d => d.Department)
+                .Include(d => d.Department.Division)
+                .Include(d => d.Location)
+                .Include(d => d.Section)
+                .Select(d => _mapper.Map<User>(d)).ToListAsync();
 
             return response;
         }

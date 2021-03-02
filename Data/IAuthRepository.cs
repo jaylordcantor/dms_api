@@ -7,7 +7,7 @@ namespace dms_api.Data
 {
     public interface IAuthRepository
     {
-        Task<ServiceResponse<int>> Register(User user, string password);
+        Task<ServiceResponse<List<User>>> Register(User user, string password);
         Task<ServiceResponse<string>> Login(string username, string password);
         Task<ServiceResponse<List<User>>> GetAllUsers();
         Task<bool> UserExists(string username);

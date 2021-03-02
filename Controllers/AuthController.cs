@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using dms_api.Data;
 using dms_api.Dtos.User;
@@ -31,7 +32,7 @@ namespace dms_api.Controllers
         public async Task<IActionResult> Register(UserRegisterDto request)
         {
 
-            ServiceResponse<int> response = await _authRepository.Register(
+            ServiceResponse<List<User>> response = await _authRepository.Register(
                 new User
                 {
                     DepartmentId = request.DepartmentId,
