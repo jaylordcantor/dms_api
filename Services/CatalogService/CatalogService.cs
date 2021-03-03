@@ -36,6 +36,8 @@ namespace dms_api.Services.CatalogService
 
             serviceResponse.Data = await (
                 _context.Catalogs
+                .Include(c => c.Department)
+                .Include(c => c.Section)
                 .Select(c => _mapper.Map<GetCatalogDto>(c))
             ).ToListAsync();
 
