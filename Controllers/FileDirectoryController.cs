@@ -1,7 +1,5 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using dms_api.Dtos.FileDirectory;
-using dms_api.Models;
 using dms_api.Services.FileDirectoryService;
 using Microsoft.AspNetCore.Mvc;
 
@@ -34,6 +32,12 @@ namespace dms_api.Controllers
         public async Task<IActionResult> GetById(int id)
         {
             return Ok(await _fileDirectoryService.GetFileDirectoryById(id));
+        }
+
+        [HttpGet("api/get/catalog/{id}")]
+        public async Task<IActionResult> GetByCatalog(int id)
+        {
+            return Ok(await _fileDirectoryService.GetFileDirectoryByCatalog(id));
         }
 
         [HttpGet("api/parent/get/{id}")]

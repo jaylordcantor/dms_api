@@ -28,10 +28,10 @@ namespace dms_api.Services.FileDirectoryService
 
             string path = "";
 
-            if(fileDirectory.RootDirectoryId != null)
+            if (fileDirectory.RootDirectoryId != null)
             {
                 //create directory from the directory of root path.
-                path = SelectedRootDirectory(fileDirectory.RootDirectoryId)+ @"\" + fileDirectory.Name;
+                path = SelectedRootDirectory(fileDirectory.RootDirectoryId) + @"\" + fileDirectory.Name;
 
             }
             else
@@ -40,7 +40,7 @@ namespace dms_api.Services.FileDirectoryService
             }
 
             //check if directory is already exists.
-            if(Directory.Exists(path))
+            if (Directory.Exists(path))
             {
                 serviceResponse.Success = false;
                 serviceResponse.Message = "Directory is already exists.";
@@ -56,7 +56,13 @@ namespace dms_api.Services.FileDirectoryService
             await _context.FileDirectories.AddAsync(fileDirectory);
             await _context.SaveChangesAsync();
 
-            serviceResponse.Data = await (_context.FileDirectories.Select(f => _mapper.Map<GetFileDirectoryDto>(f))).ToListAsync();
+            serviceResponse.Data = await (
+                _context.FileDirectories
+                .Include(x => x.RootDirectory)
+                .Include(x => x.Catalog)
+                .Where(x => x.CatalogId == fileDirectory.CatalogId)
+                .Select(f => _mapper.Map<GetFileDirectoryDto>(f))
+            ).ToListAsync();
 
             return serviceResponse;
         }
@@ -67,6 +73,21 @@ namespace dms_api.Services.FileDirectoryService
             List<FileDirectory> fileDirectory = await _context.FileDirectories.ToListAsync();
 
             serviceResponse.Data = await (_context.FileDirectories.Select(f => _mapper.Map<GetFileDirectoryDto>(f))).ToListAsync();
+
+            return serviceResponse;
+        }
+
+        public async Task<ServiceResponse<List<GetFileDirectoryDto>>> GetFileDirectoryByCatalog(int id)
+        {
+            ServiceResponse<List<GetFileDirectoryDto>> serviceResponse = new ServiceResponse<List<GetFileDirectoryDto>>();
+
+            List<FileDirectory> fileDirectories = await _context.FileDirectories
+                .Include(x => x.RootDirectory)
+                .Include(x => x.Catalog)
+                .Where(x => x.CatalogId == id).ToListAsync();
+
+            serviceResponse.Data = fileDirectories
+                .Select(x => _mapper.Map<GetFileDirectoryDto>(x)).ToList();
 
             return serviceResponse;
         }
@@ -85,7 +106,10 @@ namespace dms_api.Services.FileDirectoryService
         {
             ServiceResponse<List<GetFileDirectoryDto>> serviceResponse = new ServiceResponse<List<GetFileDirectoryDto>>();
 
-            List<FileDirectory> fileDirectory =  _context.FileDirectories.Include(s => s.Parent).Where(s => s.ParentId == id).ToList();
+            List<FileDirectory> fileDirectory = _context.FileDirectories
+                .Include(s => s.Parent)
+                .Where(s => s.ParentId == id)
+                .ToList();
 
             serviceResponse.Data = fileDirectory.Select(x => _mapper.Map<GetFileDirectoryDto>(x)).ToList();
 

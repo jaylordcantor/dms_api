@@ -8,11 +8,11 @@ namespace dms_api.Models
         public int Id { get; set; }
         public int? RootDirectoryId { get; set; }
         public RootDirectory RootDirectory { get; set; }
-        public int CatalogId { get; set; }
+        public int? CatalogId { get; set; }
         public Catalog Catalog { get; set; }
         [Required]
         public string Name { get; set; }
-        [Column(TypeName ="text")]
+        [Column(TypeName = "text")]
         [Required]
         public string Path { get; set; }
         public int? ParentId { get; set; }

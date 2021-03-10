@@ -12,5 +12,6 @@ namespace dms_api.Services.FileDirectoryService
         Task<ServiceResponse<GetFileDirectoryDto>> GetFileDirectoryById(int id);
         ServiceResponse<List<GetFileDirectoryDto>> GetFileDirectoryByParentId(int? id);
         Task<ServiceResponse<List<GetFileDirectoryDto>>> GetFileDirectoryByRootDirectoryId(int id);
+        Task<ServiceResponse<List<GetFileDirectoryDto>>> GetFileDirectoryByCatalog(int id);
     }
 }
