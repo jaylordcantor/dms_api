@@ -63,7 +63,7 @@ namespace dms_api.Services.DocumentService
             var newFileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
             var newPath = Path.Combine(path, newFileName);
 
-            using(Stream stream = new FileStream(newPath,FileMode.Create))
+            using (Stream stream = new FileStream(newPath, FileMode.Create))
             {
                 await file.CopyToAsync(stream);
             }
@@ -79,10 +79,11 @@ namespace dms_api.Services.DocumentService
 
             foreach (var file in files)
             {
-                document.Add(new Document{
+                document.Add(new Document
+                {
                     FileDirectoryId = fileDirectory.Id,
                     Name = Path.GetFileNameWithoutExtension(file.FileName), // get original filename
-                    FileName = await SaveToDirectory(file,fileDirectory.Path) //rename and save file to directory.
+                    FileName = await SaveToDirectory(file, fileDirectory.Path) //rename and save file to directory.
                 });
             }
             await SaveDocument(document); // save to db.
