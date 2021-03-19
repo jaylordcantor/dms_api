@@ -30,7 +30,18 @@ namespace dms_api.Services.CatalogService
         public async Task<ServiceResponse<List<GetCatalogDto>>> AddCatalog(AddCatalogDto newCatalog)
         {
             ServiceResponse<List<GetCatalogDto>> serviceResponse = new ServiceResponse<List<GetCatalogDto>>();
-            Catalog catalog = _mapper.Map<Catalog>(newCatalog);
+
+            //check if catalog name or code  already in use
+            Catalog catalog = _context.Catalogs.SingleOrDefault(c => c.Name == newCatalog.Name);
+
+            if (catalog != null)
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "Catalog name or code is already in used.";
+                return serviceResponse;
+            }
+
+            catalog = _mapper.Map<Catalog>(newCatalog);
 
             await _context.Catalogs.AddAsync(catalog);
             await _context.SaveChangesAsync();
