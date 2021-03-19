@@ -9,11 +9,12 @@ using dms_api.Dtos.Location;
 using dms_api.Dtos.RootDirectory;
 using dms_api.Dtos.Section;
 using dms_api.Dtos.User;
+using dms_api.Dtos.UserCatalog;
 using dms_api.Models;
 
 namespace dms_api
 {
-    public class AutoMapperProfile  : Profile
+    public class AutoMapperProfile : Profile
     {
         public AutoMapperProfile()
         {
@@ -50,6 +51,7 @@ namespace dms_api
             CreateMap<AddSectionDto, Section>();
 
             //UserCatalog
+            CreateMap<UserCatalog, GetUserCatalogDto>();
             CreateMap<User, GetUserDto>()
                 .ForMember(dto => dto.Catalogs, u => u.MapFrom(u => u.UserCatalogs.Select(uc => uc.Catalog)));
         }

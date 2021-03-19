@@ -19,6 +19,8 @@ namespace dms_api.Services.UserCatalogService
         private readonly IMapper _mapper;
         private readonly DataContext _context;
         private readonly IHttpContextAccessor _accessor;
+        private int UserId() => int.Parse(_accessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
+        private int UserRole() => int.Parse(_accessor.HttpContext.User.FindFirstValue(ClaimTypes.Role));
         public UserCatalogService(DataContext context, IHttpContextAccessor accessor, IMapper mapper)
         {
             _accessor = accessor;
@@ -26,9 +28,9 @@ namespace dms_api.Services.UserCatalogService
             _mapper = mapper;
 
         }
-        public async Task<ServiceResponse<GetUserDto>> AddUserCatalog(AddUserCatalogDto newUserCatalog)
+        public async Task<ServiceResponse<List<GetUserCatalogDto>>> AddUserCatalog(AddUserCatalogDto newUserCatalog)
         {
-            ServiceResponse<GetUserDto> serviceResponse = new ServiceResponse<GetUserDto>();
+            ServiceResponse<List<GetUserCatalogDto>> serviceResponse = new ServiceResponse<List<GetUserCatalogDto>>();
 
             try
             {
@@ -60,14 +62,27 @@ namespace dms_api.Services.UserCatalogService
 
                 UserCatalog userCatalog = new UserCatalog
                 {
-                    Catalog = catalog,
-                    User = user
+                    User = user,
+                    Catalog = catalog
+                };
+
+
+                UserCatalog myUserCatalog = new UserCatalog
+                {
+                    UserId = newUserCatalog.UserId,
+                    CatalogId = newUserCatalog.CatalogId
                 };
 
                 await _context.UserCatalogs.AddAsync(userCatalog);
                 await _context.SaveChangesAsync();
 
-                serviceResponse.Data = _mapper.Map<GetUserDto>(user);
+                serviceResponse.Data = await _context.UserCatalogs
+                    .Include(x => x.Catalog)
+                    .Include(x => x.User)
+                    .Include(x => x.User.Department)
+                    .Include(x => x.User.Section)
+                    .Select(s => _mapper.Map<GetUserCatalogDto>(s))
+                    .ToListAsync();
             }
             catch (Exception ex)
             {
@@ -112,12 +127,12 @@ namespace dms_api.Services.UserCatalogService
         {
             ServiceResponse<List<GetUserDto>> serviceResponse = new ServiceResponse<List<GetUserDto>>();
             List<User> user = await _context.Users
-                .Include(u => u.Department)
-                .Include(u => u.Location)
-                .Include(u => u.Section)
-                .Include(u => u.UserCatalogs)
-                .ThenInclude(uc => uc.Catalog)
-                .ToListAsync();
+                    .Include(u => u.Department)
+                    .Include(u => u.Location)
+                    .Include(u => u.Section)
+                    .Include(u => u.UserCatalogs)
+                    .ThenInclude(uc => uc.Catalog)
+                    .ToListAsync();
 
             serviceResponse.Data = await (_context.Users.Select(u => _mapper.Map<GetUserDto>(u))).ToListAsync();
             serviceResponse.Message = _accessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -133,12 +148,38 @@ namespace dms_api.Services.UserCatalogService
                     .Include(u => u.Location)
                     .Include(u => u.Section)
                     .Include(u => u.UserCatalogs).ThenInclude(uc => uc.Catalog)
-                    .FirstOrDefaultAsync(u => u.Id == id);
+                    .FirstOrDefaultAsync(u => u.Id == id && u.Id == UserId());
 
             serviceResponse.Data = _mapper.Map<GetUserDto>(user);
-            serviceResponse.Message = "hello" + int.Parse(_accessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
+            serviceResponse.Message = "Success!";
 
             return serviceResponse;
+        }
+
+        public async Task<ServiceResponse<List<GetUserCatalogDto>>> GetUserCatalogs()
+        {
+            ServiceResponse<List<GetUserCatalogDto>> response = new ServiceResponse<List<GetUserCatalogDto>>();
+
+
+            List<UserCatalog> userCatalogs = UserRole().Equals(1) ?
+                await _context.UserCatalogs
+                .Include(x => x.Catalog)
+                .Include(x => x.User)
+                .Include(x => x.User.Department)
+                .Include(x => x.User.Section)
+                .ToListAsync()
+            :
+                await _context.UserCatalogs
+                .Include(x => x.Catalog)
+                .Include(x => x.User)
+                .Include(x => x.User.Department)
+                .Include(x => x.User.Section).Where(x => x.UserId == UserId())
+                .ToListAsync();
+
+            response.Data = userCatalogs.Select(x => _mapper.Map<GetUserCatalogDto>(x)).ToList();
+            response.Message = "Success!";
+
+            return response;
         }
     }
 }

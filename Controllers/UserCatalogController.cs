@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace dms_api.Controllers
 {
+
     [ApiController]
     [Route("[controller]")]
     public class UserCatalogController : ControllerBase
@@ -33,7 +34,7 @@ namespace dms_api.Controllers
         [HttpGet("api/get")]
         public async Task<IActionResult> GetAllUsers()
         {
-            return Ok(await _userCatalogService.GetUsersInUserCatalog());
+            return Ok(await _userCatalogService.GetUserCatalogs());
         }
 
         [HttpGet("api/get/{id}")]

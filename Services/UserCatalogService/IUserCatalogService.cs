@@ -8,7 +8,8 @@ namespace dms_api.Services.UserCatalogService
 {
     public interface IUserCatalogService
     {
-        Task<ServiceResponse<GetUserDto>> AddUserCatalog(AddUserCatalogDto newUserCatalog);
+        Task<ServiceResponse<List<GetUserCatalogDto>>> GetUserCatalogs();
+        Task<ServiceResponse<List<GetUserCatalogDto>>> AddUserCatalog(AddUserCatalogDto newUserCatalog);
         Task<ServiceResponse<List<GetUserDto>>> GetUsersInUserCatalog();
         Task<ServiceResponse<GetUserDto>> GetUserCatalogById(int id);
         Task<ServiceResponse<List<GetUserDto>>> DeleteUserCatolog(DeleteUserCatalog deleteUserCatalog);

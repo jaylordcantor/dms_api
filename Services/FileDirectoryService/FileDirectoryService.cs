@@ -2,11 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using dms_api.Data;
 using dms_api.Dtos.FileDirectory;
 using dms_api.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace dms_api.Services.FileDirectoryService
@@ -15,8 +17,12 @@ namespace dms_api.Services.FileDirectoryService
     {
         private readonly DataContext _context;
         private readonly IMapper _mapper;
-        public FileDirectoryService(IMapper mapper, DataContext context)
+        private readonly IHttpContextAccessor _accessor;
+        private int UserId() => int.Parse(_accessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
+        private int UserRole() => int.Parse(_accessor.HttpContext.User.FindFirstValue(ClaimTypes.Role));
+        public FileDirectoryService(IMapper mapper, DataContext context, IHttpContextAccessor accessor)
         {
+            _accessor = accessor;
             _mapper = mapper;
             _context = context;
 
@@ -72,7 +78,7 @@ namespace dms_api.Services.FileDirectoryService
             ServiceResponse<List<GetFileDirectoryDto>> serviceResponse = new ServiceResponse<List<GetFileDirectoryDto>>();
             List<FileDirectory> fileDirectory = await _context.FileDirectories.ToListAsync();
 
-            serviceResponse.Data = await (_context.FileDirectories.Select(f => _mapper.Map<GetFileDirectoryDto>(f))).ToListAsync();
+            serviceResponse.Data = fileDirectory.Select(f => _mapper.Map<GetFileDirectoryDto>(f)).ToList();
 
             return serviceResponse;
         }

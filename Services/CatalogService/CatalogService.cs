@@ -25,7 +25,8 @@ namespace dms_api.Services.CatalogService
 
         }
 
-        private int GetUserId() => int.Parse(_accessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
+        private int UserId() => int.Parse(_accessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
+        private int UserRole() => int.Parse(_accessor.HttpContext.User.FindFirstValue(ClaimTypes.Role));
         public async Task<ServiceResponse<List<GetCatalogDto>>> AddCatalog(AddCatalogDto newCatalog)
         {
             ServiceResponse<List<GetCatalogDto>> serviceResponse = new ServiceResponse<List<GetCatalogDto>>();
@@ -43,7 +44,6 @@ namespace dms_api.Services.CatalogService
 
             return serviceResponse;
         }
-
         public async Task<ServiceResponse<List<GetCatalogDto>>> DeleteCatalog(int id)
         {
             ServiceResponse<List<GetCatalogDto>> serviceResponse = new ServiceResponse<List<GetCatalogDto>>();
@@ -72,10 +72,11 @@ namespace dms_api.Services.CatalogService
         {
             ServiceResponse<List<GetCatalogDto>> serviceResponse = new ServiceResponse<List<GetCatalogDto>>();
             List<Catalog> catalogs = await _context.Catalogs
-                .Include(s => s.Section)
-                .Include(s => s.Department)
-                .Include(s => s.Department.Division)
-                .ToListAsync();
+                    .Include(s => s.Section)
+                    .Include(s => s.Department)
+                    .Include(s => s.Department.Division)
+                    .ToListAsync();
+
 
             serviceResponse.Data = catalogs
                 .Select(c => _mapper.Map<GetCatalogDto>(c))

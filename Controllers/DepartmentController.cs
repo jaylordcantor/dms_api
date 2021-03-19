@@ -47,7 +47,7 @@ namespace dms_api.Controllers
         public async Task<IActionResult> Update(UpdateDepartmentDto updatedDepartment)
         {
             ServiceResponse<GetDepartmentDto> response = await _departmentService.UpdateDepartment(updatedDepartment);
-            if(response.Data == null)
+            if (response.Data == null)
             {
                 return NotFound(response);
             }
