@@ -6,7 +6,9 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using dms_api.Data;
+using dms_api.Dtos.Document;
 using dms_api.Dtos.FileDirectory;
+using dms_api.Dtos.FileSystemObject;
 using dms_api.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -33,23 +35,24 @@ namespace dms_api.Services.FileDirectoryService
             FileDirectory fileDirectory = _mapper.Map<FileDirectory>(newFileDirectory);
 
             string path = "";
+            string catalogFolder = Guid.NewGuid().ToString();
 
-            if (fileDirectory.RootDirectoryId != null)
+            if (fileDirectory.RootDirectoryId != null && fileDirectory.CatalogId != null)
             {
                 //create directory from the directory of root path.
-                path = SelectedRootDirectory(fileDirectory.RootDirectoryId) + @"\" + fileDirectory.Name;
+                path = SelectedRootDirectory(fileDirectory.RootDirectoryId) + @"\" + catalogFolder + @"\" + fileDirectory.Name;
 
             }
             else
             {
-                path = SelectedFileDirectory(fileDirectory.ParentId) + fileDirectory.Name;
+                path = SelectedFileDirectory(fileDirectory.ParentId) + @"\" + fileDirectory.Name;
             }
 
             //check if directory is already exists.
             if (Directory.Exists(path))
             {
                 serviceResponse.Success = false;
-                serviceResponse.Message = "Directory is already exists.";
+                serviceResponse.Message = "Directory is already exists." + path;
 
                 return serviceResponse;
             }
@@ -59,6 +62,7 @@ namespace dms_api.Services.FileDirectoryService
 
             //save path to DB.
             fileDirectory.Path = path;
+
             await _context.FileDirectories.AddAsync(fileDirectory);
             await _context.SaveChangesAsync();
 
@@ -69,7 +73,7 @@ namespace dms_api.Services.FileDirectoryService
                 .Where(x => x.CatalogId == fileDirectory.CatalogId)
                 .Select(f => _mapper.Map<GetFileDirectoryDto>(f))
             ).ToListAsync();
-
+            serviceResponse.Message = catalogFolder;
             return serviceResponse;
         }
 
@@ -83,6 +87,7 @@ namespace dms_api.Services.FileDirectoryService
             return serviceResponse;
         }
 
+        //return list of files by catalog id
         public async Task<ServiceResponse<List<GetFileDirectoryDto>>> GetFileDirectoryByCatalog(int id)
         {
             ServiceResponse<List<GetFileDirectoryDto>> serviceResponse = new ServiceResponse<List<GetFileDirectoryDto>>();
@@ -107,7 +112,7 @@ namespace dms_api.Services.FileDirectoryService
 
             return serviceResponse;
         }
-
+        //return subfolders
         public ServiceResponse<List<GetFileDirectoryDto>> GetFileDirectoryByParentId(int? id)
         {
             ServiceResponse<List<GetFileDirectoryDto>> serviceResponse = new ServiceResponse<List<GetFileDirectoryDto>>();
@@ -121,7 +126,7 @@ namespace dms_api.Services.FileDirectoryService
 
             return serviceResponse;
         }
-
+        //return root folders
         public async Task<ServiceResponse<List<GetFileDirectoryDto>>> GetFileDirectoryByRootDirectoryId(int id)
         {
             ServiceResponse<List<GetFileDirectoryDto>> serviceResponse = new ServiceResponse<List<GetFileDirectoryDto>>();
@@ -134,16 +139,112 @@ namespace dms_api.Services.FileDirectoryService
 
         private string SelectedFileDirectory(int? id)
         {
-            FileDirectory fileDirectory = _context.FileDirectories.Include(f => f.Parent).First(f => f.Parent.ParentId == id);
+            FileDirectory fileDirectory = _context.FileDirectories.Single(f => f.Id == id);
 
-            return fileDirectory.Parent.Path;
+            return fileDirectory.Path;
         }
 
-        private string SelectedRootDirectory(int? id)
+        private async Task<string> SelectedRootDirectory(int? id)
         {
-            RootDirectory rootDirectory = _context.RootDirectories.Single(r => r.Id == id);
+            RootDirectory rootDirectory = await _context.RootDirectories.SingleAsync(r => r.Id == id);
 
             return rootDirectory.Path;
+        }
+
+        private async Task<Catalog> GetOneCatalog(int? id)
+        {
+            if (id == null)
+            {
+                return null;
+            }
+
+            var catalog = await _context.Catalogs
+                .Include(c => c.Department)
+                .SingleAsync();
+
+            return catalog;
+        }
+
+        private async Task<List<Document>> GetDocuments(int id)
+        {
+            List<Document> documents = await _context.Documents.Where(d => d.FileDirectoryId == id).ToListAsync();
+
+            return documents;
+
+        }
+
+        private async Task<List<FileDirectory>> GetFileDirectories(int id)
+        {
+            List<FileDirectory> fileDirectories = await _context.FileDirectories.Where(f => f.ParentId == id).ToListAsync();
+
+            return fileDirectories;
+        }
+
+        private GetFileSystemObjectDto GetOneDocument(Document document)
+        {
+
+            if (document == null)
+            {
+                return null;
+            }
+            var pdfDocument = new GetFileSystemObjectDto();
+            pdfDocument.IsFile = true;
+            pdfDocument.Name = document.Name;
+            pdfDocument.FileId = document.Id;
+            pdfDocument.Path = document.FileDirectory.Path;
+            return pdfDocument;
+        }
+
+        private GetFileSystemObjectDto GetOneFileDirectory(FileDirectory fileDirectory)
+        {
+
+            if (fileDirectory == null)
+            {
+                return null;
+            }
+            var directory = new GetFileSystemObjectDto();
+            directory.IsFile = false;
+            directory.ParentId = fileDirectory.ParentId;
+            directory.FileId = fileDirectory.Id;
+            directory.Name = fileDirectory.Name;
+            directory.Path = fileDirectory.Path;
+            return directory;
+        }
+
+
+        public async Task<ServiceResponse<List<GetFileSystemObjectDto>>> GetFileSystemObject(int id)
+        {
+            ServiceResponse<List<GetFileSystemObjectDto>> response = new ServiceResponse<List<GetFileSystemObjectDto>>();
+
+            FileDirectory fileDirectory = await _context.FileDirectories
+                .Include(c => c.Catalog)
+                .Include(c => c.Parent)
+                .Include(c => c.RootDirectory)
+
+                .SingleOrDefaultAsync(f => f.Id == id);
+            var objId = 0;
+            var objs = new List<GetFileSystemObjectDto>();
+
+            foreach (FileDirectory directory in await GetFileDirectories(id))
+            {
+                objId += 1;
+                var obj = GetOneFileDirectory(directory);
+                obj.Id = objId;
+                objs.Add(obj);
+
+            }
+
+            foreach (Document document in await GetDocuments(id))
+            {
+                objId += 1;
+                var obj = GetOneDocument(document);
+                obj.Id = objId;
+                objs.Add(obj);
+
+            }
+            response.Data = objs;
+
+            return response;
         }
     }
 }

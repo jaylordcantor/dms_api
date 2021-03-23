@@ -53,7 +53,12 @@ namespace dms_api
             //UserCatalog
             CreateMap<UserCatalog, GetUserCatalogDto>();
             CreateMap<User, GetUserDto>()
-                .ForMember(dto => dto.Catalogs, u => u.MapFrom(u => u.UserCatalogs.Select(uc => uc.Catalog)));
+                .ForMember(
+                    dto => dto.Catalogs, u => u.MapFrom(
+                        u => u.UserCatalogs
+                        .Select(uc => uc.Catalog)
+                    )
+                );
         }
     }
 }

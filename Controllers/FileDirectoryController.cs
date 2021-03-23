@@ -51,5 +51,11 @@ namespace dms_api.Controllers
         {
             return Ok(await _fileDirectoryService.GetFileDirectoryByRootDirectoryId(id));
         }
+
+        [HttpGet("api/fileObject/get/{id}")]
+        public async Task<IActionResult> GetFileObject(int id)
+        {
+            return Ok(await _fileDirectoryService.GetFileSystemObject(id));
+        }
     }
 }
