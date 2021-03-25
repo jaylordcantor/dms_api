@@ -29,23 +29,38 @@ namespace dms_api.Services.FileDirectoryService
             _context = context;
 
         }
-        public async Task<ServiceResponse<List<GetFileDirectoryDto>>> AddFileDirectory(AddFileDirectoryDto newFileDirectory)
+        public async Task<ServiceResponse<List<GetFileSystemObjectDto>>> AddFileDirectory(AddFileDirectoryDto newFileDirectory)
         {
-            ServiceResponse<List<GetFileDirectoryDto>> serviceResponse = new ServiceResponse<List<GetFileDirectoryDto>>();
+            ServiceResponse<List<GetFileSystemObjectDto>> serviceResponse = new ServiceResponse<List<GetFileSystemObjectDto>>();
             FileDirectory fileDirectory = _mapper.Map<FileDirectory>(newFileDirectory);
 
             string path = "";
+            int id;
             string catalogFolder = Guid.NewGuid().ToString();
 
-            if (fileDirectory.RootDirectoryId != null && fileDirectory.CatalogId != null)
+            if (fileDirectory.CatalogId != null)
             {
-                //create directory from the directory of root path.
-                path = SelectedRootDirectory(fileDirectory.RootDirectoryId) + @"\" + catalogFolder + @"\" + fileDirectory.Name;
+                var catalog = await GetOneCatalog(fileDirectory.CatalogId);
+                var rootDirectory = await GetRootDirectoryByDept(catalog.DepartmentId);
+
+                if (rootDirectory != null)
+                {
+                    //create directory from the directory of root path.
+                    id = rootDirectory.Id;
+                    path = await SelectedRootDirectory(rootDirectory.Id) + @"\" + catalogFolder + @"\" + fileDirectory.Name;
+                }
+                else
+                {
+                    serviceResponse.Success = false;
+                    serviceResponse.Message = "No Root folder is selected please contact your administrator";
+                    return serviceResponse;
+                }
 
             }
             else
             {
-                path = SelectedFileDirectory(fileDirectory.ParentId) + @"\" + fileDirectory.Name;
+                id = (int)fileDirectory.ParentId;
+                path = await SelectedFileDirectory(fileDirectory.ParentId) + @"\" + fileDirectory.Name;
             }
 
             //check if directory is already exists.
@@ -66,13 +81,9 @@ namespace dms_api.Services.FileDirectoryService
             await _context.FileDirectories.AddAsync(fileDirectory);
             await _context.SaveChangesAsync();
 
-            serviceResponse.Data = await (
-                _context.FileDirectories
-                .Include(x => x.RootDirectory)
-                .Include(x => x.Catalog)
-                .Where(x => x.CatalogId == fileDirectory.CatalogId)
-                .Select(f => _mapper.Map<GetFileDirectoryDto>(f))
-            ).ToListAsync();
+            var fileSystemObjects = await FileSystemObject(id);
+
+            serviceResponse.Data = fileSystemObjects;
             serviceResponse.Message = catalogFolder;
             return serviceResponse;
         }
@@ -137,9 +148,9 @@ namespace dms_api.Services.FileDirectoryService
             return serviceResponse;
         }
 
-        private string SelectedFileDirectory(int? id)
+        private async Task<string> SelectedFileDirectory(int? id)
         {
-            FileDirectory fileDirectory = _context.FileDirectories.Single(f => f.Id == id);
+            FileDirectory fileDirectory = await _context.FileDirectories.SingleAsync(f => f.Id == id);
 
             return fileDirectory.Path;
         }
@@ -160,14 +171,28 @@ namespace dms_api.Services.FileDirectoryService
 
             var catalog = await _context.Catalogs
                 .Include(c => c.Department)
-                .SingleAsync();
+                .SingleAsync(c => c.Id == id);
 
             return catalog;
         }
 
+        private async Task<RootDirectory> GetRootDirectoryByDept(int? id)
+        {
+            if (id == null)
+            {
+                return null;
+            }
+
+            var rootDirectory = await _context.RootDirectories.Include(c => c.Department).SingleAsync(c => c.DepartmentId == id);
+
+            return rootDirectory;
+        }
         private async Task<List<Document>> GetDocuments(int id)
         {
-            List<Document> documents = await _context.Documents.Where(d => d.FileDirectoryId == id).ToListAsync();
+            List<Document> documents = await _context.Documents
+                .Where(d => d.FileDirectoryId == id)
+                .OrderBy(d => d.Name)
+                .ToListAsync();
 
             return documents;
 
@@ -175,7 +200,10 @@ namespace dms_api.Services.FileDirectoryService
 
         private async Task<List<FileDirectory>> GetFileDirectories(int id)
         {
-            List<FileDirectory> fileDirectories = await _context.FileDirectories.Where(f => f.ParentId == id).ToListAsync();
+            List<FileDirectory> fileDirectories = await _context.FileDirectories
+                .Where(f => f.ParentId == id)
+                .OrderBy(f => f.Name)
+                .ToListAsync();
 
             return fileDirectories;
         }
@@ -211,11 +239,8 @@ namespace dms_api.Services.FileDirectoryService
             return directory;
         }
 
-
-        public async Task<ServiceResponse<List<GetFileSystemObjectDto>>> GetFileSystemObject(int id)
+        private async Task<List<GetFileSystemObjectDto>> FileSystemObject(int id)
         {
-            ServiceResponse<List<GetFileSystemObjectDto>> response = new ServiceResponse<List<GetFileSystemObjectDto>>();
-
             FileDirectory fileDirectory = await _context.FileDirectories
                 .Include(c => c.Catalog)
                 .Include(c => c.Parent)
@@ -242,7 +267,16 @@ namespace dms_api.Services.FileDirectoryService
                 objs.Add(obj);
 
             }
-            response.Data = objs;
+
+            return objs;
+        }
+        public async Task<ServiceResponse<List<GetFileSystemObjectDto>>> GetFileSystemObject(int id)
+        {
+            ServiceResponse<List<GetFileSystemObjectDto>> response = new ServiceResponse<List<GetFileSystemObjectDto>>();
+
+            response.Data = await FileSystemObject(id);
+            response.Success = true;
+            response.Message = "Success!";
 
             return response;
         }

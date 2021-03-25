@@ -8,7 +8,7 @@ namespace dms_api.Services.FileDirectoryService
 {
     public interface IFileDirectoryService
     {
-        Task<ServiceResponse<List<GetFileDirectoryDto>>> AddFileDirectory(AddFileDirectoryDto newFileDirectory);
+        Task<ServiceResponse<List<GetFileSystemObjectDto>>> AddFileDirectory(AddFileDirectoryDto newFileDirectory);
         Task<ServiceResponse<List<GetFileDirectoryDto>>> GetAllFileDirectory();
         Task<ServiceResponse<GetFileDirectoryDto>> GetFileDirectoryById(int id);
         ServiceResponse<List<GetFileDirectoryDto>> GetFileDirectoryByParentId(int? id);
