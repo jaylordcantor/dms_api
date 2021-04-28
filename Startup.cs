@@ -23,6 +23,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Net.Http.Headers;
 
 namespace dms_api
 {
@@ -67,7 +68,15 @@ namespace dms_api
                 };
             });
 
-            services.AddCors();
+            services.AddCors(o => o.AddPolicy("DMS_POLICY", builder =>
+            {
+                builder.AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .WithOrigins("http://172.16.20.30:3000")
+                    .SetIsOriginAllowed(origin => true)
+                    .WithHeaders(HeaderNames.ContentType)
+                    .AllowAnyOrigin();
+            }));
 
             services.AddAutoMapper(typeof(Startup));
         }
@@ -83,12 +92,12 @@ namespace dms_api
             //app.UseHttpsRedirection();
 
             // global cors policy
-            app.UseCors(x => x
-                .AllowAnyMethod()
-                .AllowAnyHeader()
-                .SetIsOriginAllowed(origin => true) // allow any origin
-                .AllowCredentials()); // allow credentials
-
+            // app.UseCors(x => x
+            //     .AllowAnyMethod()
+            //     .AllowAnyHeader()
+            //     .SetIsOriginAllowed(origin => true) // allow any origin
+            //     .AllowCredentials()); // allow credentials
+            app.UseCors("DMS_POLICY");
             app.UseRouting();
 
             app.UseAuthentication();

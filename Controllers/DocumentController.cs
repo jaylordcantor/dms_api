@@ -31,9 +31,14 @@ namespace dms_api.Controllers
         }
 
         [HttpGet("api/preview/get/{id}")]
-        public async Task<IActionResult> Preview(int id)
+        public async Task<IActionResult> Preview(int? id)
         {
-            return File(await _documentService.PreviewDocument(id),"application/pdf");
+            if (id == null)
+            {
+                return BadRequest();
+            }
+
+            return File(await _documentService.PreviewDocument(id), "application/pdf");
         }
     }
 }

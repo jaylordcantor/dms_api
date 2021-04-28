@@ -155,7 +155,7 @@ namespace dms_api.Services.FileDirectoryService
             return fileDirectory.Path;
         }
 
-        private async Task<string> SelectedRootDirectory(int? id)
+        public async Task<string> SelectedRootDirectory(int? id)
         {
             RootDirectory rootDirectory = await _context.RootDirectories.SingleAsync(r => r.Id == id);
 
@@ -248,7 +248,7 @@ namespace dms_api.Services.FileDirectoryService
 
                 .SingleOrDefaultAsync(f => f.Id == id);
             var objId = 0;
-            var objs = new List<GetFileSystemObjectDto>();
+            List<GetFileSystemObjectDto> objs = new List<GetFileSystemObjectDto>();
 
             foreach (FileDirectory directory in await GetFileDirectories(id))
             {

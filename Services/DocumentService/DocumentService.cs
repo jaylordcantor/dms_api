@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 using AutoMapper;
 using dms_api.Data;
 using dms_api.Dtos.Document;
+using dms_api.Dtos.FileSystemObject;
 using dms_api.Models;
+using dms_api.Services.FileDirectoryService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,8 +18,11 @@ namespace dms_api.Services.DocumentService
     {
         private readonly DataContext _context;
         private readonly IMapper _mapper;
-        public DocumentService(IMapper mapper, DataContext context)
+        private readonly IFileDirectoryService _fileDirectoryService;
+
+        public DocumentService(IMapper mapper, DataContext context, IFileDirectoryService fileDirectoryService)
         {
+            _fileDirectoryService = fileDirectoryService;
             _mapper = mapper;
             _context = context;
 
@@ -33,8 +38,9 @@ namespace dms_api.Services.DocumentService
             throw new NotImplementedException();
         }
 
-        public async Task<Stream> PreviewDocument(int id)
+        public async Task<Stream> PreviewDocument(int? id)
         {
+
             Document document = await _context.Documents.Include(f => f.FileDirectory).FirstOrDefaultAsync(d => d.Id == id);
             var file = Path.Combine(document.FileDirectory.Path, document.FileName);
 
@@ -72,11 +78,10 @@ namespace dms_api.Services.DocumentService
 
         }
 
-        public async Task<ServiceResponse<List<GetDocumentDto>>> UploadDocument(FileDirectory fileDirectory, List<IFormFile> files)
+        public async Task<ServiceResponse<List<GetFileSystemObjectDto>>> UploadDocument(FileDirectory fileDirectory, List<IFormFile> files)
         {
-            ServiceResponse<List<GetDocumentDto>> serviceResponse = new ServiceResponse<List<GetDocumentDto>>();
             List<Document> document = new List<Document>();
-
+            int id = fileDirectory.Id;
             foreach (var file in files)
             {
                 document.Add(new Document
@@ -86,11 +91,12 @@ namespace dms_api.Services.DocumentService
                     FileName = await SaveToDirectory(file, fileDirectory.Path) //rename and save file to directory.
                 });
             }
+
             await SaveDocument(document); // save to db.
 
-            serviceResponse.Message = "Upload Finished";
-            serviceResponse.Data = await (_context.Documents.Select(d => _mapper.Map<GetDocumentDto>(d)).ToListAsync());
-            return serviceResponse;
+            var objs = await _fileDirectoryService.GetFileSystemObject(id);
+
+            return objs;
         }
     }
 }
